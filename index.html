@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Una frase al día</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,500&family=Lora:ital,wght@0,400;0,500;1,400&family=Parisienne&display=swap');
+
+:root{
+  --night: #0c0f28;
+  --night-2: #14173a;
+  --panel: #1c1a3f;
+  --gold: #e7b75c;
+  --gold-dim: #7a6535;
+  --rose: #e7a9a0;
+  --cream: #f4efe4;
+  --lavender: #9a93c9;
+  --line: rgba(231,183,92,0.28);
+}
+
+*{ box-sizing: border-box; }
+
+html,body{
+  margin:0; padding:0;
+  background: radial-gradient(ellipse at 50% -10%, #1a1c46 0%, var(--night) 55%, #07081a 100%);
+  color: var(--cream);
+  font-family: 'Lora', serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.sky{
+  position: fixed; inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.star{
+  position: absolute;
+  background: var(--cream);
+  border-radius: 50%;
+  opacity: 0.5;
+  animation: twinkle 4s ease-in-out infinite;
+}
+@keyframes twinkle{
+  0%,100%{ opacity: .15; }
+  50%{ opacity: .85; }
+}
+
+.wrap{
+  position: relative;
+  z-index: 1;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 64px 24px 100px;
+}
+
+header.hero{
+  text-align: center;
+  margin-bottom: 56px;
+}
+.eyebrow{
+  font-family: 'Lora', serif;
+  font-size: 12px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--lavender);
+  margin-bottom: 18px;
+}
+h1{
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 500;
+  font-size: clamp(38px, 7vw, 58px);
+  line-height: 1.08;
+  margin: 0 0 14px;
+  color: var(--cream);
+}
+h1 em{
+  font-style: italic;
+  color: var(--gold);
+}
+.dedication{
+  font-family: 'Parisienne', cursive;
+  font-size: 24px;
+  color: var(--rose);
+  margin-top: 6px;
+}
+.sub{
+  font-size: 15px;
+  color: var(--lavender);
+  max-width: 440px;
+  margin: 18px auto 0;
+  line-height: 1.6;
+}
+
+/* --- Today's card --- */
+.today{
+  position: relative;
+  background: linear-gradient(160deg, var(--panel), #14132f);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 46px 38px;
+  text-align: center;
+  box-shadow: 0 30px 70px -30px rgba(0,0,0,0.7), 0 0 0 1px rgba(231,183,92,0.05) inset;
+  overflow: hidden;
+}
+.today::before{
+  content:"";
+  position: absolute;
+  top: -60%; left: 50%;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(231,183,92,0.16), transparent 65%);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+.today-label{
+  font-size: 11px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.today-label .dot{
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--gold);
+  animation: pulse 1.8s ease-in-out infinite;
+}
+@keyframes pulse{
+  0%,100%{ box-shadow: 0 0 0 0 rgba(231,183,92,0.5); }
+  50%{ box-shadow: 0 0 0 8px rgba(231,183,92,0); }
+}
+.phrase{
+  font-family: 'Cormorant Garamond', serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: clamp(24px, 4.4vw, 32px);
+  line-height: 1.45;
+  color: var(--cream);
+  margin: 0 auto 22px;
+  max-width: 520px;
+  position: relative;
+}
+.phrase-day{
+  font-size: 13px;
+  color: var(--lavender);
+  letter-spacing: 0.04em;
+}
+.heart{
+  margin-top: 18px;
+  display: inline-block;
+  color: var(--rose);
+  font-size: 20px;
+}
+
+/* --- Reminder button --- */
+.reminder{
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.bell-btn{
+  font-family: 'Lora', serif;
+  font-size: 14px;
+  color: var(--night);
+  background: var(--gold);
+  border: none;
+  padding: 13px 26px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: transform .15s ease, box-shadow .15s ease;
+  box-shadow: 0 8px 24px -8px rgba(231,183,92,0.5);
+}
+.bell-btn:hover{ transform: translateY(-1px); }
+.bell-btn:active{ transform: translateY(0); }
+.bell-btn.on{
+  background: transparent;
+  color: var(--gold);
+  border: 1px solid var(--gold-dim);
+  box-shadow: none;
+}
+.bell-btn:focus-visible{ outline: 2px solid var(--rose); outline-offset: 3px; }
+.reminder small{
+  color: var(--lavender);
+  font-size: 12px;
+  max-width: 360px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* --- Constellation --- */
+.constellation-section{
+  margin-top: 88px;
+}
+.section-head{
+  text-align: center;
+  margin-bottom: 28px;
+}
+.section-head .eyebrow{ margin-bottom: 8px; }
+.section-head h2{
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 500;
+  font-size: 26px;
+  color: var(--cream);
+  margin: 0;
+}
+.section-head p{
+  color: var(--lavender);
+  font-size: 13px;
+  margin: 8px 0 0;
+}
+
+.constellation{
+  position: relative;
+  padding: 20px 4px 4px;
+}
+svg.threads{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.star-grid{
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 26px 10px;
+  position: relative;
+  z-index: 1;
+}
+@media (max-width: 480px){
+  .star-grid{ grid-template-columns: repeat(4, 1fr); }
+}
+.star-btn{
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--lavender);
+  font-family: 'Lora', serif;
+  font-size: 10px;
+}
+.star-btn:focus-visible{ outline: 2px solid var(--rose); outline-offset: 3px; border-radius: 6px; }
+.star-mark{
+  width: 30px; height: 30px;
+  position: relative;
+}
+.star-mark svg{ width: 100%; height: 100%; display:block; }
+.star-btn.locked .star-mark{ opacity: 0.3; }
+.star-btn.locked{ cursor: default; }
+.star-btn.today .star-mark{
+  filter: drop-shadow(0 0 6px var(--gold));
+  animation: pulse 1.8s ease-in-out infinite;
+  border-radius: 50%;
+}
+.star-btn:not(.locked):hover .star-mark{ transform: scale(1.25) rotate(0deg); }
+.star-btn.unlocked .star-mark{ color: var(--gold); }
+.star-btn.today .star-mark{ color: var(--rose); }
+.star-btn.locked .star-mark{ color: var(--lavender); }
+
+/* --- Modal --- */
+.modal-backdrop{
+  position: fixed; inset: 0;
+  background: rgba(4,5,16,0.72);
+  backdrop-filter: blur(3px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  padding: 20px;
+}
+.modal-backdrop.open{ display: flex; }
+.modal{
+  background: linear-gradient(160deg, var(--panel), #15132e);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  max-width: 440px;
+  width: 100%;
+  padding: 36px 30px;
+  text-align: center;
+  position: relative;
+}
+.modal-close{
+  position: absolute;
+  top: 14px; right: 16px;
+  background: none;
+  border: none;
+  color: var(--lavender);
+  font-size: 20px;
+  cursor: pointer;
+  line-height: 1;
+}
+.modal-close:focus-visible{ outline: 2px solid var(--rose); }
+.modal .today-label{ justify-content: center; }
+.modal .phrase{ font-size: 22px; }
+
+/* --- footer --- */
+footer{
+  text-align: center;
+  margin-top: 90px;
+  color: var(--lavender);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+footer .sign{
+  font-family: 'Parisienne', cursive;
+  font-size: 22px;
+  color: var(--rose);
+  display: block;
+  margin-top: 10px;
+}
+
+@media (prefers-reduced-motion: reduce){
+  .star, .today-label .dot, .star-btn.today .star-mark{ animation: none !important; }
+}
+</style>
+</head>
+<body>
+
+<div class="sky" id="sky"></div>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">un cielo escrito para ti</div>
+    <h1>Una <em>frase</em> al día</h1>
+    <div class="dedication">para ti, papota linda</div>
+    <p class="sub">Cada día aparece un gato nuevo. Cada gato guarda una frase que te escribí. Ábrelo hoy, y vuelve mañana por el siguiente.</p>
+  </header>
+
+  <section class="today">
+    <div class="today-label"><span class="dot"></span> frase de hoy</div>
+    <p class="phrase" id="todayPhrase">cargando…</p>
+    <div class="phrase-day" id="todayDay"></div>
+    <div class="heart">♡</div>
+
+    <div class="reminder">
+      <button class="bell-btn" id="bellBtn">🔔 Avísame cada día</button>
+      <small id="bellHint">Te lo recordaré mientras tengas esta página abierta en tu navegador. Para no perderte ninguna, vuelve todos los días.</small>
+    </div>
+  </section>
+
+  <section class="constellation-section">
+    <div class="section-head">
+      <div class="eyebrow">tu manada</div>
+      <h2>Cada día, un gato más</h2>
+      <p id="progressText"></p>
+    </div>
+    <div class="constellation">
+      <div class="star-grid" id="starGrid"></div>
+    </div>
+  </section>
+
+  <footer>
+    escrito con lo que queda de mí
+    <span class="sign">con amor</span>
+  </footer>
+
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal">
+    <button class="modal-close" id="modalClose" aria-label="Cerrar">×</button>
+    <div class="today-label"><span class="dot"></span> <span id="modalDay"></span></div>
+    <p class="phrase" id="modalPhrase"></p>
+    <div class="heart">♡</div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   PERSONALIZA AQUÍ
+   - PHRASES: agrega, quita o edita frases libremente
+   ========================================================= */
+
+const PHRASES = [
+  "¿Qué milagro más grande que encontrarnos?",
+  "Un abrazo anhelado y esperado, por fin, de ti.",
+  "Eres tan perfecta que me vuelves imperfecto.",
+  "Solo tú eres a quien amo.",
+  "Quiero ser yo para ti, en cada momento que defina tu vida.",
+  "Más que costumbre, solo me encuentro en ti.",
+  "Soy creyente de ti.",
+  "Creo en lo que somos, en lo que seremos y hemos sido.",
+  "Como si el mundo estuviera vacío y fueras lo único en él: soy tuya.",
+  "Te he llegado a amar, y mi mente no te puede sacar.",
+  "Porque te amo, y en serio, eres mi mayor deseo.",
+  "Te deseo. Solo a ti deseo. Solo a ti pertenezco.",
+  "El reloj dejó de rodar desde que estás ausente.",
+  "Qué costumbre se volvió encontrarte.",
+  "Te encuentro al abrir los ojos, y al cerrarlos también.",
+  "Nada se compara a tus ojos.",
+  "El sol te hace brillar más que las estrellas.",
+  "Tus labios no me permiten dejar de ser ilusorio.",
+  "Mi alma te reclama, mi cuerpo siempre te extraña.",
+  "Me vuelves vulnerable a tus encantos.",
+  "Quiero descifrar cada fragmento de tu alma.",
+  "Solo necesito uno de tus besos para comprender el mundo entero.",
+  "Si tus piernas fueran lienzos, pintaría una obra de arte en ellos.",
+  "Eres todo lo que mi corazón describe.",
+  "Tantas cosas que decir, que me quedan cortas en este libro.",
+  "Cada noche cuento estrellas y ninguna te iguala.",
+  "Contigo hasta el silencio sabe decir 'te amo'.",
+  "Eres la razón por la que empecé a creer en la casualidad.",
+  "Mi lugar favorito del mundo es a tu lado.",
+  "Si el amor tiene forma, tiene la tuya.",
+  "Cada día elijo quererte, sin pensarlo dos veces.",
+  "Contigo el tiempo no pasa: se queda.",
+  "Eres mi hoy, mi mañana, y todos los que sigan.",
+  "No necesito el cielo si ya te tengo a ti.",
+  "Tu risa es mi canción favorita.",
+  "Quisiera guardar este momento contigo para siempre.",
+  "Contigo aprendí que el amor también se construye despacio.",
+  "Eres la calma que no sabía que estaba buscando.",
+  "Gracias por elegirme, cada día, sin condiciones.",
+  "Te amo en presente, en pasado, y en cada futuro posible."
+];
+
+/* ========================================================= */
+
+/* --- genera un gato distinto para cada índice (siempre el mismo gato para el mismo día) --- */
+function hash(seed, salt){
+  const x = Math.sin(seed * 12.9898 + salt * 78.233) * 43758.5453;
+  return x - Math.floor(x);
+}
+function rotatePt(cx, cy, x, y, deg){
+  const rad = deg * Math.PI / 180;
+  const dx = x - cx, dy = y - cy;
+  return [
+    cx + dx * Math.cos(rad) - dy * Math.sin(rad),
+    cy + dx * Math.sin(rad) + dy * Math.cos(rad)
+  ];
+}
+function pts(arr){ return arr.map(p => p.join(',')).join(' '); }
+function lerp(a, b, t){ return [a[0] + (b[0]-a[0])*t, a[1] + (b[1]-a[1])*t]; }
+
+const TAILS = [
+  'M23,20 Q29,18 27,12 Q26,8 22,10',   // se enrosca hacia arriba
+  'M23,22 Q28,24 26,28 Q25,30 21,28',  // se enrosca hacia abajo
+  'M23,21 Q25,14 22,8',                // recta hacia arriba, curva suave
+  'M23,23 Q29,24 30,20',               // baja y relajada
+  'M23,21 Q30,21 29,15',               // extendida al lado
+  'M23,22 Q27,26 23,29 Q21,30.5 18,29' // enroscada como ovillo
+];
+
+function catSVG(i){
+  const bodyPose  = Math.floor(hash(i,0) * 2);           // 0: sentado / 1: ovillo
+  const earTiltL  = -30 + hash(i,1) * 22;                 // -30 a -8
+  const earTiltR  =   8 + hash(i,2) * 22;                 //   8 a 30
+  const tailIdx   = Math.floor(hash(i,3) * TAILS.length);
+  const flip      = hash(i,4) > 0.5 ? -1 : 1;
+  const rot       = -7 + hash(i,5) * 14;                  // -7 a 7 grados
+  const whiskerN  = hash(i,6) > 0.45 ? 3 : 2;
+  const earSize   = 4.6 + hash(i,7) * 1.6;
+
+  const headCx = 16, headCy = bodyPose === 1 ? 12 : 11, headR = bodyPose === 1 ? 5.5 : 6;
+
+  // orejas: cada una es un triángulo rotado alrededor de su base
+  const earL_base = [headCx - 5, headCy - 4];
+  const earL_tip  = [headCx - 5 - earSize, headCy - 4 - earSize * 1.7];
+  const earL_side = [headCx - 1.5, headCy - 5];
+  const [tlx, tly] = rotatePt(earL_base[0], earL_base[1], earL_tip[0], earL_tip[1], earTiltL);
+  const [slx, sly] = rotatePt(earL_base[0], earL_base[1], earL_side[0], earL_side[1], earTiltL);
+  const earLPoly = pts([earL_base, [tlx, tly], [slx, sly]]);
+
+  const earR_base = [headCx + 5, headCy - 4];
+  const earR_tip  = [headCx + 5 + earSize, headCy - 4 - earSize * 1.7];
+  const earR_side = [headCx + 1.5, headCy - 5];
+  const [trx, try_] = rotatePt(earR_base[0], earR_base[1], earR_tip[0], earR_tip[1], earTiltR);
+  const [srx, sry] = rotatePt(earR_base[0], earR_base[1], earR_side[0], earR_side[1], earTiltR);
+  const earRPoly = pts([earR_base, [trx, try_], [srx, sry]]);
+
+  const bodyEl = bodyPose === 1
+    ? `<ellipse cx="16" cy="21" rx="9" ry="6.2" fill="currentColor"/>`
+    : `<ellipse cx="16" cy="22" rx="7.4" ry="6.6" fill="currentColor"/>`;
+
+  // orejas internas (rosadas), un poco más pequeñas y centradas dentro de cada oreja
+  const innerScale = 0.5;
+  const earLInner = pts([
+    earL_base,
+    lerp(earL_base, [tlx, tly], innerScale),
+    lerp(earL_base, [slx, sly], innerScale)
+  ]);
+  const earRInner = pts([
+    earR_base,
+    lerp(earR_base, [trx, try_], innerScale),
+    lerp(earR_base, [srx, sry], innerScale)
+  ]);
+
+  // ojos: varían levemente de forma (más redondos o más achinados) y separación
+  const eyeSpread = 2.1 + hash(i, 20) * 0.6;
+  const eyeSize = 0.85 + hash(i, 21) * 0.35;
+  const eyeTilt = hash(i, 22) > 0.5 ? 1 : -1;
+  const eyeCy = headCy - 0.3;
+  const eyes = `
+    <ellipse cx="${headCx - eyeSpread}" cy="${eyeCy}" rx="${eyeSize}" ry="${eyeSize * 1.15}" fill="var(--night)"/>
+    <ellipse cx="${headCx + eyeSpread}" cy="${eyeCy}" rx="${eyeSize}" ry="${eyeSize * 1.15}" fill="var(--night)"/>
+    <circle cx="${headCx - eyeSpread + 0.3 * eyeTilt}" cy="${eyeCy - 0.3}" r="${eyeSize * 0.32}" fill="currentColor" opacity="0.9"/>
+    <circle cx="${headCx + eyeSpread + 0.3 * eyeTilt}" cy="${eyeCy - 0.3}" r="${eyeSize * 0.32}" fill="currentColor" opacity="0.9"/>`;
+
+  // nariz + boca (una pequeña "w" de gato), con leve variación de ancho
+  const mouthW = 1.6 + hash(i, 23) * 0.8;
+  const noseCy = headCy + 1.6;
+  const mouth = `
+    <path d="M${headCx},${noseCy + 0.4} Q${headCx},${noseCy + 1.1} ${headCx - mouthW},${noseCy + 0.4}" fill="none" stroke="var(--night)" stroke-width="0.55" stroke-linecap="round" opacity="0.85"/>
+    <path d="M${headCx},${noseCy + 0.4} Q${headCx},${noseCy + 1.1} ${headCx + mouthW},${noseCy + 0.4}" fill="none" stroke="var(--night)" stroke-width="0.55" stroke-linecap="round" opacity="0.85"/>
+    <path d="M${headCx},${noseCy - 0.5} L${headCx - 0.55},${noseCy + 0.35} L${headCx + 0.55},${noseCy + 0.35} Z" fill="var(--night)" opacity="0.85"/>`;
+
+  let whiskers = '';
+  for(let w = 0; w < whiskerN; w++){
+    const yOff = 11.5 + w * 1.6;
+    const jitter = (hash(i, 10 + w) - 0.5) * 3;
+    whiskers += `<line x1="10.5" y1="${yOff}" x2="4.5" y2="${yOff + jitter}" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" opacity="0.85"/>`;
+    whiskers += `<line x1="21.5" y1="${yOff}" x2="27.5" y2="${yOff - jitter}" stroke="currentColor" stroke-width="0.7" stroke-linecap="round" opacity="0.85"/>`;
+  }
+
+  return `<svg viewBox="0 0 32 32">
+    <g transform="scale(${flip},1) translate(${flip === -1 ? -32 : 0},0) rotate(${rot} 16 16)">
+      <path d="${TAILS[tailIdx]}" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/>
+      ${bodyEl}
+      <polygon points="${earLPoly}" fill="currentColor"/>
+      <polygon points="${earRPoly}" fill="currentColor"/>
+      <circle cx="${headCx}" cy="${headCy}" r="${headR}" fill="currentColor"/>
+      <polygon points="${earLInner}" fill="var(--rose)" opacity="0.9"/>
+      <polygon points="${earRInner}" fill="var(--rose)" opacity="0.9"/>
+      ${whiskers}
+      ${eyes}
+      ${mouth}
+    </g>
+  </svg>`;
+}
+
+function pad(n){ return n < 10 ? "0"+n : ""+n; }
+function isoDate(d){ return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
+function midnight(d){ const x = new Date(d); x.setHours(0,0,0,0); return x; }
+
+/* =========================================================
+   FECHA DE INICIO — día 1 de tu historia
+   Cámbiala si quieres que empiece en otra fecha (formato YYYY-MM-DD).
+   A partir de la medianoche de cada día siguiente, la frase avanza
+   sola para cualquiera que entre, sin importar si alguien la abrió
+   antes o no.
+   ========================================================= */
+const START_DATE = "2026-07-22";
+
+let state = {
+  lastSeen: null,
+  notifOn: false
+};
+
+async function loadState(){
+  // Estas dos preferencias son solo "de adorno" (aviso de campanita e insignia
+  // de "nueva frase"). Si la página corre fuera de Claude.ai, window.storage
+  // no existe y simplemente no se recuerdan entre visitas — no afecta en nada
+  // a qué frase le toca a cada día, que siempre se calcula con START_DATE.
+  try{
+    const r = await window.storage.get('poema_last_seen', false);
+    state.lastSeen = r ? r.value : null;
+  }catch(e){ state.lastSeen = null; }
+
+  try{
+    const r = await window.storage.get('poema_notif_on', false);
+    state.notifOn = r ? r.value === 'true' : false;
+  }catch(e){ state.notifOn = false; }
+}
+
+function dayIndexToday(){
+  const start = midnight(new Date(START_DATE + "T00:00:00"));
+  const today = midnight(new Date());
+  const diff = Math.round((today - start) / 86400000);
+  return Math.max(0, diff);
+}
+
+function buildSky(){
+  const sky = document.getElementById('sky');
+  const n = 70;
+  for(let i=0;i<n;i++){
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = Math.random() * 2 + 1;
+    s.style.width = size+'px';
+    s.style.height = size+'px';
+    s.style.top = (Math.random()*100)+'%';
+    s.style.left = (Math.random()*100)+'%';
+    s.style.animationDelay = (Math.random()*4)+'s';
+    sky.appendChild(s);
+  }
+}
+
+function renderToday(dayIdx){
+  const phrase = PHRASES[dayIdx % PHRASES.length];
+  const cycle = Math.floor(dayIdx / PHRASES.length);
+  document.getElementById('todayPhrase').textContent = `"${phrase}"`;
+  let label = `día ${dayIdx+1}`;
+  if(cycle > 0) label += ` · vuelta ${cycle+1} de tu constelación`;
+  document.getElementById('todayDay').textContent = label;
+  document.title = "Una frase al día — nueva frase para hoy";
+}
+
+function renderGrid(dayIdx){
+  const grid = document.getElementById('starGrid');
+  grid.innerHTML = '';
+  const total = PHRASES.length;
+  const unlockedCount = Math.min(dayIdx + 1, total);
+
+  document.getElementById('progressText').textContent =
+    `${unlockedCount} de ${total} gatos en tu manada`;
+
+  for(let i=0;i<total;i++){
+    const btn = document.createElement('button');
+    const unlocked = i < unlockedCount;
+    btn.className = 'star-btn ' + (unlocked ? (i === unlockedCount-1 ? 'today unlocked' : 'unlocked') : 'locked');
+    btn.innerHTML = `<span class="star-mark">${catSVG(i)}</span><span>${i+1}</span>`;
+    if(unlocked){
+      btn.addEventListener('click', () => openModal(i));
+    }else{
+      btn.setAttribute('aria-disabled','true');
+    }
+    grid.appendChild(btn);
+  }
+}
+
+function openModal(i){
+  document.getElementById('modalDay').textContent = 'día ' + (i+1);
+  document.getElementById('modalPhrase').textContent = `"${PHRASES[i % PHRASES.length]}"`;
+  document.getElementById('modalBackdrop').classList.add('open');
+}
+function closeModal(){
+  document.getElementById('modalBackdrop').classList.remove('open');
+}
+
+async function markSeenToday(){
+  const today = isoDate(new Date());
+  if(state.lastSeen !== today){
+    state.lastSeen = today;
+    try{ await window.storage.set('poema_last_seen', today, false); }catch(e){}
+  }
+}
+
+function updateBellUI(){
+  const btn = document.getElementById('bellBtn');
+  const hint = document.getElementById('bellHint');
+  if(state.notifOn){
+    btn.classList.add('on');
+    btn.textContent = '🔔 Recordatorio activado';
+    hint.textContent = 'Perfecto. Si dejas esta pestaña abierta, te avisaré apenas cambie el día. (Los navegadores no permiten avisos reales si la cierras — vuelve cada día para no perderte ninguna).';
+  }else{
+    btn.classList.remove('on');
+    btn.textContent = '🔔 Avísame cada día';
+    hint.textContent = 'Te lo recordaré mientras tengas esta página abierta en tu navegador. Para no perderte ninguna, vuelve todos los días.';
+  }
+}
+
+async function enableNotifications(){
+  if(!('Notification' in window)){
+    alert('Tu navegador no admite notificaciones, pero puedes volver cada día igualmente 💛');
+    return;
+  }
+  const perm = await Notification.requestPermission();
+  if(perm === 'granted'){
+    state.notifOn = true;
+    try{ await window.storage.set('poema_notif_on', 'true', false); }catch(e){}
+    updateBellUI();
+    new Notification('Recordatorio activado 💌', { body: 'Te avisaré cada vez que haya una frase nueva, mientras esta pestaña siga abierta.' });
+  }else{
+    alert('No se activó el permiso de notificaciones. Puedes intentarlo de nuevo cuando quieras.');
+  }
+}
+
+function watchForNewDay(){
+  let knownIdx = dayIndexToday();
+  setInterval(() => {
+    const idx = dayIndexToday();
+    if(idx !== knownIdx){
+      knownIdx = idx;
+      renderToday(idx);
+      renderGrid(idx);
+      markSeenToday();
+      if(state.notifOn && Notification.permission === 'granted'){
+        const phrase = PHRASES[idx % PHRASES.length];
+        new Notification('Nueva frase para ti 💌', { body: phrase });
+      }
+    }
+  }, 30000);
+}
+
+async function init(){
+  buildSky();
+  await loadState();
+  const dayIdx = dayIndexToday();
+  renderToday(dayIdx);
+  renderGrid(dayIdx);
+  updateBellUI();
+  await markSeenToday();
+
+  document.getElementById('bellBtn').addEventListener('click', () => {
+    if(!state.notifOn) enableNotifications();
+  });
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+  document.getElementById('modalBackdrop').addEventListener('click', (e) => {
+    if(e.target.id === 'modalBackdrop') closeModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape') closeModal();
+  });
+
+  watchForNewDay();
+}
+
+init();
+</script>
+</body>
+</html>
